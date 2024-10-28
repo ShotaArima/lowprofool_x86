@@ -1,7 +1,5 @@
-このリポジトリは、[LowProFool](https://github.com/axa-rev-research/LowProFool)のリポジトリを再現するためにDockerで再現するためにしたものです。  
-This repository is my hands-on repository from LowProFool by Github[LowProFool](https://github.com/axa-rev-research/LowProFool).
+このリポジトリは、[LowProFool](https://github.com/axa-rev-research/LowProFool)のリポジトリを再現するためにDockerで再現するためにしたものです。  This repository is my hands-on repository from LowProFool by Github[LowProFool](https://github.com/axa-rev-research/LowProFool).
 
-また、このリポジトリは、armチップ用にqumeを使用し、`tensorflow`を動かしていたが、ALVXに対応していなかったため、いまはうごかしていません。
 
 __Disclaimer:__ This repository is not maintained anymore
 
