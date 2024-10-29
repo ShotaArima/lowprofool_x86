@@ -30,8 +30,9 @@ RUN set -x \
 ENV PATH="/root/.pyenv/bin:/root/.pyenv/shims:${PATH}"
 
 # Install dependencies
-    # 実行を早くするオプションPYTHON_CONFIGURE_OPS="--enable-shared"
-RUN PYTHON_CONFIGURE_OPS="--enable-shared" pyenv install ${PYTHON_VERSION} \
+# 実行を早くするオプションPYTHON_CONFIGURE_OPS="--enable-shared"
+RUN set -x \
+    && PYTHON_CONFIGURE_OPS="--enable-shared" pyenv install ${PYTHON_VERSION} \
     && pyenv global ${PYTHON_VERSION} \
     && pyenv rehash
 

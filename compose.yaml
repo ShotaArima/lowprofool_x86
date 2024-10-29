@@ -2,7 +2,7 @@ services:
   jupyter:
     build:
       context: .
-      dockerfile: dockerfile
+      dockerfile: Dockerfile
     platform: linux/amd64
     volumes:
       - .:/src:/src
