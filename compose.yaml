@@ -1,0 +1,16 @@
+services:
+  jupyter:
+    build:
+      context: .
+      dockerfile: dockerfile
+    platform: linux/amd64
+    volumes:
+      - .:/src:/src
+    ports:
+      - "9004:9004"
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+      - HASHED_PASSWORD=
+    command:
+      - bash
+      - eval "$(pyenv init --path) " && "(pyenv init -)" && jupyter notebook --ip=0.0.0.0 --port=9004 --allow-root --no-browser --NotebookApp.password=${HASHED_PASSWORD}
