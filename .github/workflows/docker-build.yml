@@ -19,7 +19,7 @@ jobs:
     - uses: actions/checkout@v4
     - name: Build the Docker image
       run: |
-        TAG=$(TZ=-9 date +%Y-%m-%d-%H-%M-%S)
+        TAG=$(date +%Y-%m%d-%H-%M)
         docker build . --file Dockerfile --tag ghcr.io/shotaarima/lowprofool_x86-jupyter:${TAG}
         docker login ghcr.io -u shotaarima -p ${{ secrets.GITHUB_TOKEN }}
         docker push ghcr.io/shotaarima/lowprofool_x86-jupyter:${TAG}
