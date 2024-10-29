@@ -5,16 +5,35 @@ FROM ubuntu:24.04
 ARG PYTHON_VERSION=3.7.2
 
 # Install dependencies
-RUN apt-get update && apt-get install -y wget unzip
+RUN set -x \
+    && apt-get update \
+    && apt-get install -y \
+        curl \
+        git \
+        build-essential \
+        zlib1g-dev \
+        libncurses5-dev \
+        libgdbm-dev \
+        libnss3-dev \
+        libssl-dev \
+        libreadline-dev \
+        libffi-dev \
+        xz-utils \
+        libbz2-dev \
+        liblzma-dev \
+        libsqlite3-dev \
+    && curl -sSL https://pyenv.run | bash > /tmp/install-pyenv.sh \
+    && chmod +x /tmp/install-pyenv.sh \
+    && /tmp/install-pyenv.sh
 
-# Install pyenv
-RUN PATH = "/root/.penv/bin:$PATH"
+# define path
+ENV PATH="/root/.pyenv/bin:/root/.pyenv/shims:${PATH}"
 
 # Install dependencies
-RUN MAKEOPTS = "j$(nproc)" pyenv install ${PYTHON_VERSION}
-
-# Set the installed Python version as the default
-RUN pyenv global ${PYTHON_VERSION}
+RUN export PYTHON_BUILD_HARDCODED_VERSION_PATH=0 \
+    && CONFIGURE_OPS="--anable-shared" pyenv install ${PYTHON_VERSION} \
+    && pyenv global ${PYTHON_VERSION} \
+    && pyenv rehash
 
 # define workdir
 WORKDIR /src/
