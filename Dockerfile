@@ -2,7 +2,7 @@
 FROM ubuntu:24.04
 
 # define maintainer
-ARG PYTHON_VERSION=3.7.2
+ARG PYTHON_VERSION=3.7.4
 
 # Install dependencies
 RUN set -x \
@@ -32,7 +32,7 @@ ENV PATH="/root/.pyenv/bin:/root/.pyenv/shims:${PATH}"
 # Install dependencies
 # 実行を早くするオプションPYTHON_CONFIGURE_OPS="--enable-shared"
 RUN set -x \
-    && PYTHON_CONFIGURE_OPS="--enable-shared" pyenv install ${PYTHON_VERSION} \
+    && pyenv install ${PYTHON_VERSION} \
     && pyenv global ${PYTHON_VERSION} \
     && pyenv rehash
 
