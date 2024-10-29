@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: dockerfile
-    platform: linex/x86_64
+    platform: linux/amd64
     volumes:
       - .:/src:/src
     ports:
