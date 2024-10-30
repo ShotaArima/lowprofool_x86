@@ -32,7 +32,7 @@ def get_metrics(config, list_metrics, n_neighbors=2):
             metrics_for_method.append(sr)
 
         # Removes samples that did cross frontier
-        df_adv = remove_non_converted(df_adv)
+        df_adv = remove_non_converted(df_adv)        
         df_adv = add_normdelta_to(df_adv, config, df_test)
 
         # Adding proportion of neighbors from diff classes
@@ -193,6 +193,8 @@ def get_majority_neighbors(df_adv, df_orig, conf, knn, n_neighbors):
             
             distance, neighbors_idxs = knn.kneighbors([sample], n_neighbors)
             neighbors_samples = df_orig.iloc[neighbors_idxs[0]]
+            
+           
             distance = [distance[0][1:]]
             neighbors_idxs = [neighbors_idxs[0][1:]]
             
@@ -263,12 +265,10 @@ def add_maj_neighbors(df_adv, df_orig, conf, n_neighbors):
     target = conf['Target']
         
         
-    # knn = NearestNeighbors(n_neighbors, metric='l2')
-    knn = NearestNeighbors(n_neighbors=n_neighbors, metric='l2')
+    knn = NearestNeighbors(n_neighbors, metric='l2')
     knn.fit(df_orig[feature_names], df_orig[target])
     
-    knn_weighted = NearestNeighbors(n_neighbors=n_neighbors, metric=weighted_distance, metric_params={'w': weights})
-    # knn_weighted = NearestNeighbors(n_neighbors, metric=weighted_distance, metric_params={'w' : weights})
+    knn_weighted = NearestNeighbors(n_neighbors, metric=weighted_distance, metric_params={'w' : weights})
     knn_weighted.fit(df_orig[feature_names], df_orig[target])
 
     
