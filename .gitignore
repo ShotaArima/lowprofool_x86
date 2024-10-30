@@ -1,3 +1,5 @@
 .idea/
 
 environment.yml
+
+__pycache__/s
