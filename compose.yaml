@@ -1,8 +1,9 @@
 services:
   jupyter:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/shotaarima/lowprofool_x86-jupyter:2024-1029-12-15
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
     platform: linux/amd64
     volumes:
       - .:/src:/src
@@ -11,6 +12,8 @@ services:
     environment:
       - JUPYTER_ENABLE_LAB=yes
       - HASHED_PASSWORD=
+      - EXPERIMENTAL_DOCKER_DESKTOP_FORCE_QEMU=1
     command:
       - bash
-      - eval "$(pyenv init --path) " && "(pyenv init -)" && jupyter notebook --ip=0.0.0.0 --port=9004 --allow-root --no-browser --NotebookApp.password=${HASHED_PASSWORD}
+      - -c
+      - eval "$(pyenv init --path) " && eval "$(pyenv init -)" && jupyter notebook --ip=0.0.0.0 --port=9004 --allow-root --no-browser --NotebookApp.password=${HASHED_PASSWORD}
