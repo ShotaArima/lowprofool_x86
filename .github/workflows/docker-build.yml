@@ -1,0 +1,25 @@
+name: Docker Image Build CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build the Docker image
+      run: |
+        TAG=$(date +%Y-%m%d-%H-%M)
+        docker build . --file Dockerfile --tag ghcr.io/shotaarima/lowprofool_x86-jupyter:${TAG}
+        docker login ghcr.io -u shotaarima -p ${{ secrets.GITHUB_TOKEN }}
+        docker push ghcr.io/shotaarima/lowprofool_x86-jupyter:${TAG}
