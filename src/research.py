@@ -135,7 +135,7 @@ def get_model(conf, load=False):
             self.linear2 = torch.nn.Linear(H, H)
             self.linear3 = torch.nn.Linear(H, D_out)
             self.relu = torch.nn.ReLU()
-            self.softmax = torch.nn.Softmax(dim=0)
+            self.softmax = torch.nn.Softmax(dim=1)
 
         def forward(self, x):
             h1 = self.relu(self.linear1(x))
