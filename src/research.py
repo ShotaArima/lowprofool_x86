@@ -117,7 +117,7 @@ def get_bounds(df_orig):
     return [low_bounds, up_bounds]
 
 
-def split_train_test_valid():
+def split_train_test_valid(df, SEED=0):
     # Train test splits
     df_train, df_test = train_test_split(df, test_size=300, shuffle=True, random_state=SEED)
     df_test, df_valid = train_test_split(df_test, test_size=50, shuffle=True, random_state=SEED)
