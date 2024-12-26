@@ -3,6 +3,7 @@ import random
 import numpy as np
 import pandas as pd
 import tqdm
+from sklearn.feature_selection.tests.test_base import feature_names
 from tqdm import tqdm
 from tqdm import tqdm_notebook
 import math
@@ -135,7 +136,7 @@ def get_model(conf, load=False):
             self.linear2 = torch.nn.Linear(H, H)
             self.linear3 = torch.nn.Linear(H, D_out)
             self.relu = torch.nn.ReLU()
-            self.softmax = torch.nn.Softmax(dim=1)
+            self.softmax = torch.nn.Softmax(dim=-1)
 
         def forward(self, x):
             h1 = self.relu(self.linear1(x))
@@ -222,6 +223,8 @@ def gen_adv(config, method):
     maxiters = config['MaxIters']
     alpha = config['Alpha']
     lambda_ = config['Lambda']
+    # feature_names = ['checking_status', 'duration', 'credit_amount', 'savings_status', 'employment', 'installment_commitment', 'residence_since', 'age', 'existing_credits', 'num_dependents', 'own_telephone', 'foreign_worker']
+    feature_names = config['FeatureNames']
 
     results = np.zeros((len(df_test), len(feature_names) + len(extra_cols)))
     i = -1
@@ -238,3 +241,14 @@ def gen_adv(config, method):
         results[i] = np.concatenate((x_adv, [orig_pred, adv_pred, loop_i]), axis=0)
 
     return pd.DataFrame(results, index=df_test.index, columns=feature_names + extra_cols)
+
+
+def get_flag(row):
+    if row['y_true'] == 1.0 and row['y_pred'] == 1.0:
+        return 'TP'
+    elif row['y_true'] == 0.0 and row['y_pred'] == 0.0:
+        return 'TN'
+    elif row['y_true'] == 0.0 and row['y_pred'] == 1.0:
+        return 'FP'
+    elif row['y_true'] == 1.0 and row['y_pred'] == 0.0:
+        return 'FN'
