@@ -15,6 +15,7 @@ def clip(current, low_bound, up_bound):
     low_bound = torch.FloatTensor(low_bound)
     up_bound = torch.FloatTensor(up_bound)
     clipped = torch.max(torch.min(current, up_bound), low_bound)
+    clipped = torch.round(clipped).int()
     return clipped
 
 
@@ -106,7 +107,11 @@ def lowProFool(x, model, weights, bounds, maxiters, alpha, lambda_):
     # Clip at the end no matter what
     best_pert_x = clip(best_pert_x, bounds[0], bounds[1])
     output = model.forward(best_pert_x)
+    output_prob = output.detach().numpy()
     output_pred = output.max(0, keepdim=True)[1].cpu().numpy()
+
+    output_prob_df = pd.DataFrame(output_prob)
+    output_prob_df.to_csv('src/data/propose1.csv', index=False)
 
     return orig_pred, output_pred, best_pert_x.clone().detach().cpu().numpy(), loop_change_class
 
