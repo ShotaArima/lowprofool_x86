@@ -230,6 +230,7 @@ def gen_adv(config, method):
     i = -1
     for _, row in tqdm_notebook(df_test.iterrows(), total=df_test.shape[0], desc="{}".format(method)):
         i += 1
+        print(df_test.iloc[i].name)
         x_tensor = torch.FloatTensor(row[config['FeatureNames']])
 
         if method == 'LowProFool':
@@ -239,16 +240,15 @@ def gen_adv(config, method):
         else:
             raise Exception("Invalid method", method)
         results[i] = np.concatenate((x_adv, [orig_pred, adv_pred, loop_i]), axis=0)
-
     return pd.DataFrame(results, index=df_test.index, columns=feature_names + extra_cols)
 
 
 def get_flag(row):
     if row['y_true'] == 1.0 and row['y_pred'] == 1.0:
-        return 'TP'
-    elif row['y_true'] == 0.0 and row['y_pred'] == 0.0:
-        return 'TN'
-    elif row['y_true'] == 0.0 and row['y_pred'] == 1.0:
-        return 'FP'
+        return 'TP' # 正しく承認を得た
     elif row['y_true'] == 1.0 and row['y_pred'] == 0.0:
-        return 'FN'
+        return 'FN' # 承認を逃した
+    elif row['y_true'] == 0.0 and row['y_pred'] == 1.0:
+        return 'FP' # 不正な顧客にローンを通してしまった
+    elif row['y_true'] == 0.0 and row['y_pred'] == 0.0:
+        return 'TN' # 問題なく否認できた
