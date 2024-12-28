@@ -1,5 +1,7 @@
 # Misc
 import numpy as np
+import pandas as pd
+import os
 
 # Pytorch
 import torch
@@ -87,7 +89,8 @@ def lowProFool(x, model, weights, bounds, maxiters, alpha, lambda_):
         # Classify adversarial example
         output = model.forward(xprime)
         output_pred = output.max(0, keepdim=True)[1].cpu().numpy()
-        
+        output_prod = output.detach().cpu().numpy() # 確率の取得
+
         # Keep the best adverse at each iterations
         if output_pred != orig_pred and r_norm_weighted < best_norm_weighted:
             best_norm_weighted = r_norm_weighted
@@ -97,13 +100,15 @@ def lowProFool(x, model, weights, bounds, maxiters, alpha, lambda_):
             loop_change_class += 1
             
         loop_i += 1 
-        
+
+    print("output_prod",output_prod)
+
     # Clip at the end no matter what
     best_pert_x = clip(best_pert_x, bounds[0], bounds[1])
     output = model.forward(best_pert_x)
     output_pred = output.max(0, keepdim=True)[1].cpu().numpy()
 
-    return orig_pred, output_pred, best_pert_x.clone().detach().cpu().numpy(), loop_change_class 
+    return orig_pred, output_pred, best_pert_x.clone().detach().cpu().numpy(), loop_change_class
 
 # Forked from https://github.com/LTS4/DeepFool
 def deepfool(x_old, net, maxiters, alpha, bounds, weights=[], overshoot=0.002):
