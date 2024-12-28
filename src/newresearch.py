@@ -32,7 +32,7 @@ import torch.nn.functional as F
 import keras
 
 # Helpers
-from Adverse import lowProFool, deepfool
+from newAdverse import lowProFool, deepfool
 from Metrics import *
 
 # 学習済みモデルを保存するために必要なライブラリのimport
@@ -51,10 +51,18 @@ def get_df(dataset):
     df[target] = df[target].apply(lambda x: 0.0 if x == 'bad' or x == 0.0 else 1.0)
 
     # Subsetting features to keep only continuous, discrete and ordered categorical
-    feature_names = ['checking_status', 'duration', 'credit_amount',
-                     'savings_status', 'employment', 'installment_commitment',
-                     'residence_since', 'age', 'existing_credits', 'num_dependents',
-                     'own_telephone', 'foreign_worker']
+    feature_names = ['checking_status',
+                     'duration',
+                     'credit_amount',
+                     'savings_status',
+                     'employment',
+                     'installment_commitment',
+                     'residence_since',
+                     'age',
+                     'existing_credits',
+                     'num_dependents',
+                     'own_telephone',
+                     'foreign_worker']
 
     df = df[feature_names + [target]]
 
