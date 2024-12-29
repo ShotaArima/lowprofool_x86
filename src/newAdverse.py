@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 import os
+from sklearn.preprocessing import MinMaxScaler
 
 # Pytorch
 import torch
@@ -15,11 +16,56 @@ def clip(current, low_bound, up_bound):
     low_bound = torch.FloatTensor(low_bound)
     up_bound = torch.FloatTensor(up_bound)
     clipped = torch.max(torch.min(current, up_bound), low_bound)
-    # clipped = torch.round(clipped)
     return clipped
 
+# 正規化
+def normalize(input_tensor, feature_names):
+    tensor_return = input_tensor.clone().detach()
 
-def lowProFool(x, model, weights, bounds, maxiters, alpha, lambda_):
+    # 特徴量のみを正規化
+    X = tensor_return[feature_names]
+    scaler = MinMaxScaler()
+    # 追記: 1次元配列を2次元配列に変換
+    X_np = X.numpy().reshape(1, -1)
+    X_normalized = torch.tensor(scaler.fit_transform(X_np), dtype=torch.float32).squeeze()
+    # 正規化された特徴量を元のテンソルに戻す
+    tensor_return[feature_names] = X_normalized
+
+    return scaler, tensor_return
+
+
+# 逆正規化
+def denormalize(scaler, normalized_tensor, feature_names):
+
+    tensor_return = normalized_tensor.clone().detach()
+
+
+    # 特徴量のみを逆変換
+    X_normalized = tensor_return[feature_names].detach()
+
+    # 追記/変更: 1次元配列を2次元配列に変換
+    X_normalized_np = X_normalized.detach().numpy().reshape(1, -1)
+    X_denormalized = torch.tensor(scaler.inverse_transform(X_normalized_np), dtype=torch.float32).squeeze()
+
+    tensor_return[feature_names] = X_denormalized
+
+
+    return tensor_return
+
+def exchange_int(scaler, input_tensor, feature_names):
+
+    # 正規化された特徴量を元のスケールに戻す
+    denorm_tensor = denormalize(scaler, input_tensor, feature_names)
+
+    # int型に丸め込む
+    rounded_tensor = torch.round(denorm_tensor)
+
+    # 正規化された特徴量を元のスケールに戻す
+    new_scaler, norm_tensor = normalize(rounded_tensor, feature_names)
+
+    return new_scaler, norm_tensor
+
+def lowProFool(x, model, weights, bounds, maxiters, alpha, lambda_, scaler, feature_names):
     """
     Generates an adversarial examples x' from an original sample x
 
@@ -41,7 +87,7 @@ def lowProFool(x, model, weights, bounds, maxiters, alpha, lambda_):
     target_pred = np.abs(1 - orig_pred)
     
     target = [0., 1.] if target_pred == 1 else [1., 0.]
-    target = Variable(torch.tensor(target, requires_grad=False)) 
+    target = Variable(torch.tensor(target, requires_grad=False))
     
     lambda_ = torch.tensor([lambda_])
     
@@ -86,6 +132,9 @@ def lowProFool(x, model, weights, bounds, maxiters, alpha, lambda_):
         
         # Clip to stay in legitimate bounds
         xprime = clip(xprime, bounds[0], bounds[1])
+
+        # int型に丸め込む
+        scaler, xprime = exchange_int(scaler, xprime, list(range(len(feature_names))))
         
         # Classify adversarial example
         output = model.forward(xprime)

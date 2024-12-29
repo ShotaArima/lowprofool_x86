@@ -258,6 +258,7 @@ def gen_adv(config, method):
     alpha = config['Alpha']
     lambda_ = config['Lambda']
     feature_names = config['FeatureNames']
+    scaler = config['Scaler']
 
     results = np.zeros((len(df_test), len(feature_names) + len(extra_cols)))
     i = -1
@@ -267,7 +268,7 @@ def gen_adv(config, method):
         x_tensor = torch.FloatTensor(row[config['FeatureNames']])
 
         if method == 'LowProFool':
-            orig_pred, adv_pred, x_adv, loop_i = lowProFool(x_tensor, model, weights, bounds, maxiters, alpha, lambda_)
+            orig_pred, adv_pred, x_adv, loop_i = lowProFool(x_tensor, model, weights, bounds, maxiters, alpha, lambda_, scaler, feature_names)
         elif method == 'Deepfool':
             orig_pred, adv_pred, x_adv, loop_i = deepfool(x_tensor, model, maxiters, alpha, bounds, weights=[])
         else:
