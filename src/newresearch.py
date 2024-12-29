@@ -70,7 +70,7 @@ def get_df(dataset):
     df = df.astype(float)
     return df, target, feature_names
 
-
+# 正規化
 def normalize(df, target, feature_names, bounds):
     df_return = df.copy()
 
@@ -88,6 +88,32 @@ def normalize(df, target, feature_names, bounds):
 
     return scaler, df_return, (lower_bounds[0], upper_bounds[0])
 
+# 逆正規化
+def denormalize(scaler, normalized_df, feature_names):
+    """
+    正規化されたデータフレームを元のスケールに戻します
+
+    Parameters:
+    -----------
+    scaler : MinMaxScaler
+        normalize関数で使用したscalerインスタンス
+    normalized_df : pandas.DataFrame
+        正規化されたデータフレーム
+    feature_names : list
+        正規化された特徴量の名前のリスト
+
+    Returns:
+    --------
+    pandas.DataFrame
+        元のスケールに戻したデータフレーム
+    """
+    df_return = normalized_df.copy()
+
+    # 特徴量のみを逆変換
+    X_normalized = df_return[feature_names]
+    df_return[feature_names] = scaler.inverse_transform(X_normalized)
+
+    return df_return
 
 def get_weights(df, target, show_heatmap=True):
     def heatmap(cor):
@@ -231,7 +257,6 @@ def gen_adv(config, method):
     maxiters = config['MaxIters']
     alpha = config['Alpha']
     lambda_ = config['Lambda']
-    # feature_names = ['checking_status', 'duration', 'credit_amount', 'savings_status', 'employment', 'installment_commitment', 'residence_since', 'age', 'existing_credits', 'num_dependents', 'own_telephone', 'foreign_worker']
     feature_names = config['FeatureNames']
 
     results = np.zeros((len(df_test), len(feature_names) + len(extra_cols)))
