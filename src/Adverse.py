@@ -7,6 +7,10 @@ import torch.nn as nn
 from torch.autograd import Variable
 from torch.autograd.gradcheck import zero_gradients
 
+torch.manual_seed(0)
+np.random.seed(0)
+random.seed(0)
+
 # Clipping function
 def clip(current, low_bound, up_bound):
     assert(len(current) == len(up_bound) and len(low_bound) == len(up_bound))
