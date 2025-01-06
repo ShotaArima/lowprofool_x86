@@ -146,6 +146,10 @@ def add_normdelta_to(df_adv, conf, df):
 
     norms = []
     norms_weighted = []
+
+    # Reset index to ensure alignment
+    df_return = df_return.reset_index(drop=True)
+    df = df.reset_index(drop=True)
     
     # Iterate over all rows
     for index, row in df_return.iterrows():
